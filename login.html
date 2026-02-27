@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-wrapper {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+        .auth-wrapper h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .auth-wrapper p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        .input-field {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 12px;
+            color: #fff;
+            border-radius: 6px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .input-field:focus {
+            border-color: #fff;
+        }
+        .auth-btn {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .auth-btn:hover {
+            background: #ccc;
+        }
+        #recaptcha-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .hidden { display: none; }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">ViewTube X</div>
+    </nav>
+
+    <div class="auth-wrapper">
+        <h1>Sign In</h1>
+        <p>Enter your phone number to continue</p>
+
+        <div id="phone-section">
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone-number" class="input-field" placeholder="+91 00000 00000">
+            </div>
+            <div id="recaptcha-container"></div>
+            <button class="auth-btn" id="send-otp-btn">Get OTP</button>
+        </div>
+
+        <div id="otp-section" class="hidden">
+            <div class="input-group">
+                <label>OTP Code</label>
+                <input type="text" id="otp-code" class="input-field" placeholder="6-digit code">
+            </div>
+            <button class="auth-btn" id="verify-otp-btn">Verify OTP</button>
+        </div>
+
+        <a href="index.html" class="back-link">Return to Home</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSPZq2TqjPY-wUzqXYmtrSXqR3H9PLyuY",
+            authDomain: "view-tube-x.firebaseapp.com",
+            projectId: "view-tube-x",
+            storageBucket: "view-tube-x.firebasestorage.app",
+            messagingSenderId: "238794910286",
+            appId: "1:238794910286:web:85d820232814a7e6fbb11f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) window.location.href = "index.html";
+        });
+
+        // Recaptcha setup
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'normal'
+        });
+
+        let confirmationResult;
+
+        // Send OTP
+        document.getElementById('send-otp-btn').onclick = async () => {
+            const phoneNumber = document.getElementById('phone-number').value;
+            const appVerifier = window.recaptchaVerifier;
+
+            try {
+                confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+                document.getElementById('phone-section').classList.add('hidden');
+                document.getElementById('otp-section').classList.remove('hidden');
+                alert("OTP has been sent!");
+            } catch (error) {
+                console.error(error);
+                alert("Error: " + error.message);
+            }
+        };
+
+        // Verify OTP
+        document.getElementById('verify-otp-btn').onclick = async () => {
+            const code = document.getElementById('otp-code').value;
+            try {
+                await confirmationResult.confirm(code);
+                window.location.href = "index.html"; 
+            } catch (error) {
+                alert("Invalid OTP. Please try again.");
+            }
+        };
+    </script>
+</body>
+  </html>
+  
