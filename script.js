@@ -1,134 +1,66 @@
-:root {
-  --bg: #050505;
-  --surface: #121212;
-  --border: rgba(255, 255, 255, 0.1);
-  --accent: #ffffff;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --radius: 8px;
+const CFG = {
+    KEY: "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ",
+    BASE: "https://www.googleapis.com/youtube/v3",
+    REGION: "IN",
+    MAX: 12
+};
+
+const $ = (id) => document.getElementById(id);
+
+async function loadTrending() {
+    $("load-spinner").style.display = "block";
+    try {
+        const r = await fetch(`${CFG.BASE}/videos?part=snippet,statistics&chart=mostPopular&regionCode=${CFG.REGION}&maxResults=${CFG.MAX}&key=${CFG.KEY}`);
+        const d = await r.json();
+        renderVideos(d.items);
+    } catch (e) { console.error(e); }
+    $("load-spinner").style.display = "none";
 }
 
-body {
-  font-family: 'Inter', 'DM Sans', sans-serif;
-  background-color: var(--bg);
-  color: var(--text-primary);
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
+async function doSearch(q) {
+    if (!q.trim()) return;
+    try {
+        const r = await fetch(`${CFG.BASE}/search?part=snippet&type=video&q=${encodeURIComponent(q)}&maxResults=${CFG.MAX}&key=${CFG.KEY}`);
+        const d = await r.json();
+        renderVideos(d.items);
+    } catch (e) { console.error(e); }
 }
 
-/* Navbar: Super Clean */
-#navbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  height: 64px;
-  background: rgba(5, 5, 5, 0.8);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 40px;
-  justify-content: space-between;
+function renderVideos(items) {
+    const grid = $("video-grid");
+    grid.innerHTML = "";
+    if(!items) return;
+
+    items.forEach(item => {
+        const id = item.id.videoId || item.id;
+        const s = item.snippet;
+        const html = `
+            <div class="card" onclick="openWatch('${id}')">
+                <img src="${s.thumbnails.high.url || s.thumbnails.medium.url}">
+                <div class="card-info">
+                    <h4>${s.title}</h4>
+                    <p>${s.channelTitle}</p>
+                </div>
+            </div>`;
+        grid.insertAdjacentHTML('beforeend', html);
+    });
 }
 
-.nav-logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  letter-spacing: -1px;
-  font-size: 1.4rem;
-  text-transform: uppercase;
+function openWatch(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    $("page-watch").classList.add('active');
+    $("player-box").innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+    window.scrollTo(0,0);
 }
 
-.search-wrap {
-  flex: 0 1 500px;
-  display: flex;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
+// Initializing Events
+$("search-btn").onclick = () => doSearch($("search-input").value);
+$("search-input").onkeyup = (e) => { if(e.key === "Enter") $("search-btn").click(); };
+$("logo-btn").onclick = () => { 
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    $("page-home").classList.add('active');
+    loadTrending(); 
+};
 
-#search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: white;
-  padding: 10px 15px;
-  outline: none;
-  font-size: 0.9rem;
-}
-
-.search-btn {
-  background: var(--border);
-  color: white;
-  border: none;
-  padding: 0 20px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.search-btn:hover { background: #333; }
-
-/* Grid & Cards */
-#video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
-  padding: 40px;
-}
-
-.card {
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.card:hover { transform: translateY(-5px); }
-
-.card img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.card-info h4 {
-  margin: 12px 0 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-info p {
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-/* Buttons */
-.nav-btn {
-  background: transparent;
-  color: var(--text-secondary);
-  border: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-left: 20px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.nav-btn.active-nav { color: var(--accent); }
-
-footer {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  border-top: 1px solid var(--border);
-  letter-spacing: 1px;
-    }
+loadTrending();
+  
