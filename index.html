@@ -18,23 +18,61 @@
         </div>
 
         <div class="nav-actions">
-            <button class="nav-btn active-nav" id="btn-trending">Trending</button>
-            <button class="nav-btn" onclick="location.href='feedback.html'">Feedback</button>
-            <button class="nav-btn" id="dark-toggle">Theme</button>
+            <button class="nav-link active" id="btn-trending">Trending</button>
+            <button class="nav-link" onclick="location.href='feedback.html'">Feedback</button>
+            <button class="nav-link login-btn" id="auth-status-btn" onclick="location.href='login.html'">Login</button>
+            <button class="theme-toggle" id="dark-toggle">Theme</button>
         </div>
     </nav>
 
-    <div class="page active" id="page-home">
-        <div id="video-grid"></div>
-        <div id="load-spinner" style="display:none; text-align:center; padding:40px;">
-            <p>Loading videos...</p>
+    <main>
+        <div class="page active" id="page-home">
+            <div class="section-header">
+                <h2 id="page-title">Trending Now</h2>
+            </div>
+            
+            <div id="video-grid"></div>
+            
+            <div id="load-spinner" style="display:none; text-align:center; padding:40px;">
+                <p style="color: var(--text-secondary); letter-spacing: 1px;">FETCHING CONTENT...</p>
+            </div>
         </div>
-    </div>
+    </main>
 
     <footer>
-        &copy; 2026 VIEWTUBE X . DESIGNED BY SUFIYAN ABSAR
+        <div class="footer-content">
+            <p>&copy; 2026 VIEWTUBE X . DESIGNED BY SUFIYAN ABSAR</p>
+        </div>
     </footer>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSPZq2TqjPY-wUzqXYmtrSXqR3H9PLyuY",
+            authDomain: "view-tube-x.firebaseapp.com",
+            projectId: "view-tube-x",
+            storageBucket: "view-tube-x.firebasestorage.app",
+            messagingSenderId: "238794910286",
+            appId: "1:238794910286:web:85d820232814a7e6fbb11f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const authBtn = document.getElementById('auth-status-btn');
+            if (user && authBtn) {
+                authBtn.innerText = "Profile";
+                authBtn.onclick = () => {
+                    if(confirm("Do you want to sign out?")) {
+                        signOut(auth).then(() => location.reload());
+                    }
+                };
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
