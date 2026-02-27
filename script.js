@@ -1,55 +1,134 @@
-const CFG = {
-  KEY: "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ", // Apni API Key yahan check karein
-  BASE: "https://www.googleapis.com/youtube/v3",
-  REGION: "IN",
-  MAX: 12
-};
-
-const S = { mode: "trending", query: "", loading: false, nextToken: "" };
-
-// Utility Functions
-const $ = (id) => document.getElementById(id);
-
-// Load Trending Videos
-async function loadTrending(append = false) {
-  if (S.loading) return;
-  S.loading = true;
-  const grid = $("video-grid");
-  
-  try {
-    const r = await fetch(`${CFG.BASE}/videos?part=snippet,statistics&chart=mostPopular&regionCode=${CFG.REGION}&maxResults=${CFG.MAX}&key=${CFG.KEY}${S.nextToken ? '&pageToken='+S.nextToken : ''}`);
-    const d = await r.json();
-    
-    if (!append) grid.innerHTML = "";
-    d.items.forEach(item => {
-      grid.insertAdjacentHTML('beforeend', createVideoCard(item));
-    });
-    S.nextToken = d.nextPageToken || "";
-  } catch (err) {
-    console.error("Error loading videos", err);
-  } finally {
-    S.loading = false;
-  }
+:root {
+  --bg: #050505;
+  --surface: #121212;
+  --border: rgba(255, 255, 255, 0.1);
+  --accent: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --radius: 8px;
 }
 
-function createVideoCard(item) {
-  const s = item.snippet;
-  return `
-    <div class="card" onclick="location.href='#watch?v=${item.id}'">
-      <img src="${s.thumbnails.medium.url}" style="width:100%; border-radius:12px;">
-      <div style="padding:10px;">
-        <h4 style="margin:5px 0; font-size:0.9rem;">${s.title}</h4>
-        <p style="color:#aaa; font-size:0.8rem;">${s.channelTitle}</p>
-      </div>
-    </div>
-  `;
+body {
+  font-family: 'Inter', 'DM Sans', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-// Initial Load
-loadTrending();
+/* Navbar: Super Clean */
+#navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
+  background: rgba(5, 5, 5, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  justify-content: space-between;
+}
 
-// Dark Mode Toggle
-$("dark-toggle").onclick = () => {
-  document.body.classList.toggle("light");
-  $("dark-toggle").textContent = document.body.classList.contains("light") ? "☀️" : "🌙";
-};
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+
+.search-wrap {
+  flex: 0 1 500px;
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.search-btn {
+  background: var(--border);
+  color: white;
+  border: none;
+  padding: 0 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-btn:hover { background: #333; }
+
+/* Grid & Cards */
+#video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+.card {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.card:hover { transform: translateY(-5px); }
+
+.card img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.card-info h4 {
+  margin: 12px 0 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-info p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Buttons */
+.nav-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-left: 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-btn.active-nav { color: var(--accent); }
+
+footer {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  letter-spacing: 1px;
+    }
