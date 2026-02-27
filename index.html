@@ -1,75 +1,72 @@
-       <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViewTube X | Home</title>
+    <title>ViewTube X | Lumi Lens</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
     <script>
-        if (!localStorage.getItem('isLoggedIn')) {
-            window.location.href = "login.html";
-        }
+        if (!localStorage.getItem('isLoggedIn')) { window.location.href = "login.html"; }
     </script>
 </head>
 <body>
 
-    <div id="top-progress" style="position:fixed; top:0; left:0; height:2px; background:#fff; width:0; z-index:9999; transition: width 0.4s;"></div>
-
     <nav id="navbar">
-        <div class="nav-logo" id="logo-btn" style="cursor:pointer;">ViewTube X</div>
-        
+        <div class="nav-logo">ViewTube X</div>
         <div class="search-wrap">
-            <input type="text" id="search-input" placeholder="Search for content..." autocomplete="off">
+            <input type="text" id="search-input" placeholder="Search ViewTube..." autocomplete="off">
             <button class="search-btn" id="search-btn">SEARCH</button>
         </div>
-
-        <div class="nav-actions">
-            <button class="nav-link active" id="btn-trending">Trending</button>
-            <button class="nav-link" onclick="location.href='feedback.html'">Feedback</button>
-            <button class="nav-link profile-btn" id="profile-display">Profile</button>
-            <button class="theme-toggle" onclick="logout()">Logout</button>
+        <div class="nav-icons-top">
+            <span class="icon">🔔</span>
+            <div class="user-avatar" id="profile-display">S</div>
         </div>
     </nav>
 
-    <main>
-        <div class="page active" id="page-home">
-            <div class="section-header">
-                <h2 id="page-title">Trending Now</h2>
-            </div>
-            
+    <main id="main-content">
+        <div class="section-container">
+            <h3 class="section-title"><span>⚡</span> Shorts</h3>
+            <div class="shorts-grid" id="shorts-grid">
+                </div>
+        </div>
+
+        <div class="section-container">
+            <h3 class="section-title">Recommended</h3>
             <div id="video-grid"></div>
-            
-            <div id="load-spinner" style="display:none; text-align:center; padding:40px;">
-                <div class="spinner"></div>
-                <p style="letter-spacing: 2px; color: var(--text-secondary); font-size: 0.7rem;">FETCHING CONTENT...</p>
-            </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 VIEWTUBE X . DESIGNED BY SUFIYAN ABSAR</p>
-    </footer>
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="location.href='index.html'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">🩳</span>
+            <span class="nav-text">Shorts</span>
+        </div>
+        <div class="nav-item plus-btn">
+            <span class="nav-icon">➕</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Subscriptions</span>
+        </div>
+        <div class="nav-item" onclick="logout()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">You</span>
+        </div>
+    </nav>
 
+    <script src="script.js"></script>
     <script>
-        // Page Load Animation
-        window.onload = () => {
-            const bar = document.getElementById('top-progress');
-            bar.style.width = '100%';
-            setTimeout(() => { bar.style.opacity = '0'; }, 500);
-        }
-
-        // Logout logic
         function logout() {
             localStorage.removeItem('isLoggedIn');
             window.location.href = "login.html";
         }
-        
-        // Profile par user ka number dikhao
         const userNum = localStorage.getItem('userPhone');
-        if(userNum) document.getElementById('profile-display').innerText = userNum;
+        if(userNum) document.getElementById('profile-display').innerText = userNum.charAt(userNum.length - 1);
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
