@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViewTube X | Professional</title>
+    <title>ViewTube X | Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <nav id="navbar">
-        <div class="nav-logo" id="logo-btn">ViewTube X</div>
+        <div class="nav-logo" id="logo-btn" style="cursor:pointer;">ViewTube X</div>
         
         <div class="search-wrap">
             <input type="text" id="search-input" placeholder="Search for content..." autocomplete="off">
@@ -19,25 +19,20 @@
 
         <div class="nav-actions">
             <button class="nav-btn active-nav" id="btn-trending">Trending</button>
-            <button class="nav-btn" id="btn-history">History</button>
+            <button class="nav-btn" onclick="location.href='feedback.html'">Feedback</button>
             <button class="nav-btn" id="dark-toggle">Theme</button>
         </div>
     </nav>
 
     <div class="page active" id="page-home">
         <div id="video-grid"></div>
-        <div id="load-spinner" style="display:none; text-align:center; padding:40px;">Loading...</div>
-    </div>
-
-    <div class="page" id="page-watch">
-        <div class="watch-wrap" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
-            <div id="player-box" style="background:#000; border-radius:12px; overflow:hidden; aspect-ratio:16/9;"></div>
-            <div id="video-info" style="margin-top:20px;"></div>
+        <div id="load-spinner" style="display:none; text-align:center; padding:40px;">
+            <p>Loading videos...</p>
         </div>
     </div>
 
     <footer>
-        &copy; 2026 VIEWTUBE X . DESIGNED BY ZEPHYR
+        &copy; 2026 VIEWTUBE X . DESIGNED BY SUFIYAN ABSAR
     </footer>
 
     <script src="script.js"></script>
