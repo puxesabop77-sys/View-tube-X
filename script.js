@@ -7,27 +7,32 @@ const CFG = {
 
 const $ = (id) => document.getElementById(id);
 
+// --- Trending Videos ---
 async function loadTrending() {
-    $("load-spinner").style.display = "block";
+    const spinner = $("load-spinner");
+    if(spinner) spinner.style.display = "block";
     try {
         const r = await fetch(`${CFG.BASE}/videos?part=snippet,statistics&chart=mostPopular&regionCode=${CFG.REGION}&maxResults=${CFG.MAX}&key=${CFG.KEY}`);
         const d = await r.json();
         renderVideos(d.items);
-    } catch (e) { console.error(e); }
-    $("load-spinner").style.display = "none";
+    } catch (e) { console.error("Error:", e); }
+    if(spinner) spinner.style.display = "none";
 }
 
+// --- Search Function ---
 async function doSearch(q) {
     if (!q.trim()) return;
     try {
         const r = await fetch(`${CFG.BASE}/search?part=snippet&type=video&q=${encodeURIComponent(q)}&maxResults=${CFG.MAX}&key=${CFG.KEY}`);
         const d = await r.json();
         renderVideos(d.items);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Search Error:", e); }
 }
 
+// --- Render Cards ---
 function renderVideos(items) {
     const grid = $("video-grid");
+    if(!grid) return;
     grid.innerHTML = "";
     if(!items) return;
 
@@ -46,21 +51,28 @@ function renderVideos(items) {
     });
 }
 
+// --- Redirect to Player Page (NEW CHANGE) ---
 function openWatch(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    $("page-watch").classList.add('active');
-    $("player-box").innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
-    window.scrollTo(0,0);
+    // Ye line ab player.html page par redirect karegi
+    window.location.href = `player.html?v=${id}`;
 }
 
-// Initializing Events
-$("search-btn").onclick = () => doSearch($("search-input").value);
-$("search-input").onkeyup = (e) => { if(e.key === "Enter") $("search-btn").click(); };
-$("logo-btn").onclick = () => { 
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    $("page-home").classList.add('active');
-    loadTrending(); 
-};
+// --- Event Initializing ---
+function init() {
+    if($("search-btn")) {
+        $("search-btn").onclick = () => doSearch($("search-input").value);
+    }
+    if($("search-input")) {
+        $("search-input").onkeyup = (e) => { if(e.key === "Enter") $("search-btn").click(); };
+    }
+    if($("logo-btn")) {
+        $("logo-btn").onclick = () => { window.location.href = 'index.html'; };
+    }
+    if($("dark-toggle")) {
+        $("dark-toggle").onclick = () => { document.body.classList.toggle("light"); };
+    }
+    
+    loadTrending();
+}
 
-loadTrending();
-  
+init();
