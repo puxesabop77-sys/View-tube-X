@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ViewTube X</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" id="logo-btn"><em>ViewTube</em> X</div>
+        <div class="search-wrap">
+            <input type="text" id="search-input" placeholder="Search videos…" autocomplete="off">
+            <button class="search-btn" id="search-btn">🔍</button>
+            <div id="search-dropdown"></div>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn active-nav" id="btn-trending">🔥 Trending</button>
+            <button class="nav-btn" id="btn-history">🕐 History</button>
+            <button class="nav-btn" id="btn-liked">❤️ Liked</button>
+            <button id="dark-toggle">🌙</button>
+        </div>
+    </nav>
+
+    <div class="page active" id="page-home">
+        <main>
+            <div class="page-header" id="page-header"><span>🔥 Trending Now</span></div>
+            <div id="video-grid"></div>
+            <div id="load-spinner"><div class="spinner"></div></div>
+        </main>
+    </div>
+
+    <div class="page" id="page-watch">
+        <main>
+            <div class="watch-wrap">
+                <div class="player-col">
+                    <div class="player-box" id="player-box"></div>
+                    <div id="video-info"></div>
+                </div>
+                <div class="related-col" id="related-col"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="page" id="page-channel">
+        <main>
+            <div class="ch-page" id="ch-page"></div>
+        </main>
+    </div>
+
+    <nav id="mobile-nav">
+        <button class="mob-btn active" id="mob-home">🏠<span>Home</span></button>
+        <button class="mob-btn" id="mob-search-mob">🔍<span>Search</span></button>
+        <button class="mob-btn" id="mob-history">🕐<span>History</span></button>
+        <button class="mob-btn" id="mob-liked">❤️<span>Liked</span></button>
+    </nav>
+
+    <button id="scroll-top">↑</button>
+    <footer>© 2026 ViewTube X | Sufiyan Absar</footer>
+
+    <script src="script.js"></script>
+</body>
+                              </html>
+                              
