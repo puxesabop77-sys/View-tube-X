@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shorts - ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%; overflow: hidden;
+            background: #000;
+        }
+        /* Snap Scrolling Container */
+        .shorts-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none; /* Firefox */
+        }
+        .shorts-container::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        .short-video-section {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            height: 100%;
+            max-width: 500px; /* Mobile view logic */
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Overlay Icons (Like, Comment, etc.) */
+        .shorts-overlay {
+            position: absolute;
+            right: 15px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            z-index: 10;
+        }
+
+        .overlay-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            font-size: 0.8rem;
+        }
+
+        .btn-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .short-info {
+            position: absolute;
+            bottom: 80px;
+            left: 15px;
+            z-index: 10;
+            max-width: 70%;
+        }
+
+        .short-info h4 { margin: 0; font-size: 0.95rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .short-info p { margin: 5px 0 0; font-size: 0.8rem; color: #ccc; }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">←</a>
+
+    <div class="shorts-container" id="shorts-container">
+        </div>
+
+    <script>
+        const API_KEY = "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ"; //
+        const container = document.getElementById('shorts-container');
+
+        async function fetchShorts() {
+            try {
+                // Fetching random shorts using YouTube search
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&q=shorts&maxResults=15&key=${API_KEY}`);
+                const data = await res.json();
+                renderShorts(data.items);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderShorts(items) {
+            container.innerHTML = items.map(item => `
+                <section class="short-video-section">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/${item.id.videoId}?autoplay=0&controls=0&loop=1&playlist=${item.id.videoId}&modestbranding=1" 
+                                allow="autoplay; encrypted-media"></iframe>
+                        
+                        <div class="shorts-overlay">
+                            <div class="overlay-btn"><div class="btn-icon">👍</div><span>Like</span></div>
+                            <div class="overlay-btn"><div class="btn-icon">💬</div><span>1.2K</span></div>
+                            <div class="overlay-btn"><div class="btn-icon">↗️</div><span>Share</span></div>
+                        </div>
+
+                        <div class="short-info">
+                            <h4>${item.snippet.title}</h4>
+                            <p>@${item.snippet.channelTitle}</p>
+                        </div>
+                    </div>
+                </section>
+            `).join('');
+        }
+
+        fetchShorts();
+    </script>
+</body>
+  </html>
+  
