@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions - ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Top Channels Row */
+        .channels-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            scrollbar-width: none;
+        }
+        .channels-row::-webkit-scrollbar { display: none; }
+
+        .channel-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .channel-item:hover { transform: scale(1.1); }
+
+        .channel-pfp {
+            width: 56px;
+            height: 56px;
+            background: var(--surface);
+            border-radius: 50%;
+            border: 2px solid transparent;
+            margin-bottom: 8px;
+            object-fit: cover;
+        }
+        .channel-item.active .channel-pfp { border-color: #fff; }
+
+        .channel-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Video List Styling */
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+        }
+        .view-btn {
+            color: #3ea6ff;
+            background: transparent;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">ViewTube X</div>
+        <div class="search-wrap">
+            <input type="text" id="search-input" placeholder="Search subscriptions...">
+            <button class="search-btn">SEARCH</button>
+        </div>
+    </nav>
+
+    <div class="channels-row" id="channels-list">
+        <div class="channel-item active">
+            <div class="channel-pfp" style="background: #f00;"></div>
+            <span class="channel-name">Lumi Lens</span>
+        </div>
+        <div class="channel-item">
+            <div class="channel-pfp" style="background: #444;"></div>
+            <span class="channel-name">T-Series</span>
+        </div>
+        <div class="channel-item">
+            <div class="channel-pfp" style="background: #666;"></div>
+            <span class="channel-name">MrBeast</span>
+        </div>
+        <div class="channel-item">
+            <div class="channel-pfp" style="background: #888;"></div>
+            <span class="channel-name">MKBHD</span>
+        </div>
+    </div>
+
+    <div class="sub-header">
+        <h2 id="page-title" style="margin:0;">Latest from Subscriptions</h2>
+        <button class="view-btn">Manage</button>
+    </div>
+
+    <main>
+        <div id="video-grid"></div>
+        <div id="load-spinner" style="display:none; text-align:center; padding:40px;">
+            <p>Loading latest updates...</p>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="location.href='index.html'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item" onclick="location.href='shorts.html'">
+            <span class="nav-icon">🩳</span>
+            <span class="nav-text">Shorts</span>
+        </div>
+        <div class="nav-item active">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Subscriptions</span>
+        </div>
+        <div class="nav-item" onclick="location.href='login.html'">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">You</span>
+        </div>
+    </nav>
+
+    <script src="script.js"></script>
+    <script>
+        // Subscriptions logic using your YouTube API Key
+        async function loadSubContent() {
+            // Hum yahan kisi specific category ya trending content ko 'Subscriptions' feel dene ke liye load kar sakte hain
+            const CFG = {
+                KEY: "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ",
+                BASE: "https://www.googleapis.com/youtube/v3",
+                MAX: 12
+            };
+
+            const grid = document.getElementById('video-grid');
+            try {
+                // Fetching content that mimics a subscription feed (latest videos)
+                const res = await fetch(`${CFG.BASE}/videos?part=snippet,statistics&chart=mostPopular&regionCode=IN&maxResults=${CFG.MAX}&key=${CFG.KEY}`);
+                const data = await res.json();
+                
+                grid.innerHTML = data.items.map(item => `
+                    <div class="card" onclick="window.location.href='player.html?v=${item.id}'">
+                        <img src="${item.snippet.thumbnails.high.url}">
+                        <div class="card-info">
+                            <h4>${item.snippet.title}</h4>
+                            <p>${item.snippet.channelTitle} • 2 hours ago</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+        loadSubContent();
+    </script>
+</body>
+</html>
