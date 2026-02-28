@@ -6,54 +6,90 @@
     <title>ViewTube X | Lumi Lens</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
     <script>
-        if (!localStorage.getItem('isLoggedIn')) { window.location.href = "login.html"; }
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = "login.html";
+        }
     </script>
 </head>
 <body>
 
+    <div id="top-progress"></div>
+
     <nav id="navbar">
-        <div class="nav-logo">ViewTube X</div>
+        <div class="nav-logo" onclick="location.href='index.html'">ViewTube X</div>
+        
         <div class="search-wrap">
             <input type="text" id="search-input" placeholder="Search ViewTube..." autocomplete="off">
             <button class="search-btn" id="search-btn">SEARCH</button>
         </div>
+
         <div class="nav-icons-top">
-            <span class="icon">🔔</span>
-            <div class="user-avatar" id="profile-display">S</div>
+            <button class="nav-icon-btn" title="Upload" onclick="location.href='upload.html'">📤</button>
+            <button class="nav-icon-btn" title="Notifications">🔔</button>
+            <div class="user-avatar" onclick="location.href='profile.html'" id="profile-initial">S</div>
         </div>
     </nav>
 
     <main id="main-content">
-        <div class="section-container">
+        <section class="section-container">
             <h3 class="section-title"><span>⚡</span> Shorts</h3>
             <div class="shorts-grid" id="shorts-grid">
-                </div>
-        </div>
+                <div class="short-card-skeleton"></div>
+                <div class="short-card-skeleton"></div>
+                <div class="short-card-skeleton"></div>
+            </div>
+        </section>
 
-        <div class="section-container">
+        <section class="section-container">
             <h3 class="section-title">Recommended</h3>
-            <div id="video-grid"></div>
-        </div>
+            <div id="video-grid">
+                </div>
+        </section>
     </main>
+
+    <div id="plus-menu-overlay" class="plus-overlay" onclick="togglePlusMenu()">
+        <div class="plus-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-line"></div>
+            <div class="sheet-header">
+                <h3>Create</h3>
+                <button class="close-btn" onclick="togglePlusMenu()">✕</button>
+            </div>
+            <div class="plus-options">
+                <div class="option-item" onclick="location.href='shorts.html'">
+                    <span class="opt-icon">🩳</span>
+                    <div class="opt-text"><b>Create a Short</b><p>Share a vertical video</p></div>
+                </div>
+                <div class="option-item" onclick="location.href='upload.html'">
+                    <span class="opt-icon">📤</span>
+                    <div class="opt-text"><b>Upload a video</b><p>Post your long-form content</p></div>
+                </div>
+                <div class="option-item" onclick="alert('Live is locked')">
+                    <span class="opt-icon">📡</span>
+                    <div class="opt-text"><b>Go Live</b><p>Start a broadcast</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="location.href='index.html'">
             <span class="nav-icon">🏠</span>
             <span class="nav-text">Home</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="location.href='shorts.html'">
             <span class="nav-icon">🩳</span>
             <span class="nav-text">Shorts</span>
         </div>
-        <div class="nav-item plus-btn">
+        <div class="nav-item plus-btn" onclick="togglePlusMenu()">
             <span class="nav-icon">➕</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="location.href='subscriptions.html'">
             <span class="nav-icon">📺</span>
             <span class="nav-text">Subscriptions</span>
         </div>
-        <div class="nav-item" onclick="logout()">
+        <div class="nav-item" onclick="location.href='profile.html'">
             <span class="nav-icon">👤</span>
             <span class="nav-text">You</span>
         </div>
@@ -61,12 +97,32 @@
 
     <script src="script.js"></script>
     <script>
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = "login.html";
-        }
+        // Profile Initial Logic
         const userNum = localStorage.getItem('userPhone');
-        if(userNum) document.getElementById('profile-display').innerText = userNum.charAt(userNum.length - 1);
+        if(userNum) {
+            document.getElementById('profile-initial').innerText = userNum.charAt(userNum.length - 1);
+        }
+
+        // Plus Menu Logic
+        function togglePlusMenu() {
+            document.getElementById('plus-menu-overlay').classList.toggle('active');
+            document.body.style.overflow = document.getElementById('plus-menu-overlay').classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        // Global Search Logic
+        document.getElementById('search-btn').onclick = () => {
+            const query = document.getElementById('search-input').value;
+            if(query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+        }
+        document.getElementById('search-input').onkeyup = (e) => {
+            if(e.key === 'Enter') document.getElementById('search-btn').click();
+        }
+
+        // Page Progress Bar
+        window.onload = () => {
+            document.getElementById('top-progress').style.width = '100%';
+            setTimeout(() => { document.getElementById('top-progress').style.opacity = '0'; }, 500);
+        }
     </script>
 </body>
 </html>
