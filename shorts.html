@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorts - ViewTube X</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Shorts | ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Syne:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         body, html {
@@ -12,139 +12,191 @@
             height: 100%; overflow: hidden;
             background: #000;
         }
+
         /* Snap Scrolling Container */
-        .shorts-container {
+        .shorts-wrapper {
             height: 100vh;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
-        .shorts-container::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .shorts-wrapper::-webkit-scrollbar { display: none; }
 
-        .short-video-section {
+        .short-section {
             height: 100vh;
             width: 100vw;
             scroll-snap-align: start;
             position: relative;
             display: flex;
             justify-content: center;
-            align-items: center;
+            background: #000;
         }
 
-        .video-wrapper {
+        .video-container {
             width: 100%;
             height: 100%;
-            max-width: 500px; /* Mobile view logic */
+            max-width: 450px; /* Mobile Ratio on Desktop */
             position: relative;
+            background: #111;
         }
 
+        /* Using IFrame for YouTube API Content */
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none; /* Allows scroll to work over iframe */
         }
 
-        /* Overlay Icons (Like, Comment, etc.) */
-        .shorts-overlay {
+        /* Glassmorphism UI Overlays */
+        .shorts-side-actions {
             position: absolute;
             right: 15px;
-            bottom: 100px;
+            bottom: 120px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             z-index: 10;
         }
 
-        .overlay-btn {
+        .action-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             color: #fff;
-            font-size: 0.8rem;
+            cursor: pointer;
         }
 
-        .btn-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.1);
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
             border-radius: 50%;
             display: grid;
             place-items: center;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             margin-bottom: 5px;
-            backdrop-filter: blur(10px);
         }
 
-        .short-info {
+        .short-info-bottom {
             position: absolute;
             bottom: 80px;
-            left: 15px;
+            left: 20px;
+            right: 80px;
             z-index: 10;
-            max-width: 70%;
         }
 
-        .short-info h4 { margin: 0; font-size: 0.95rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .short-info p { margin: 5px 0 0; font-size: 0.8rem; color: #ccc; }
+        .short-info-bottom h4 { margin: 0; font-size: 1rem; font-family: 'Syne'; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .short-info-bottom p { margin: 8px 0 0; font-size: 0.85rem; color: #ddd; }
 
-        /* Back Button */
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: rgba(0,0,0,0.5);
+        .mute-indicator {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.6);
             color: #fff;
-            padding: 10px;
+            padding: 15px;
             border-radius: 50%;
-            cursor: pointer;
-            text-decoration: none;
+            display: none;
+            z-index: 20;
         }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">←</a>
-
-    <div class="shorts-container" id="shorts-container">
+    <div class="shorts-wrapper" id="shorts-feed">
         </div>
 
-    <script>
-        const API_KEY = "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ"; //
-        const container = document.getElementById('shorts-container');
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="location.href='index.html'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item active" onclick="location.href='shorts.html'">
+            <span class="nav-icon">🩳</span>
+            <span class="nav-text">Shorts</span>
+        </div>
+        <div class="nav-item plus-btn" onclick="togglePlusMenu()">
+            <span class="nav-icon">➕</span>
+        </div>
+        <div class="nav-item" onclick="location.href='subscriptions.html'">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Subscriptions</span>
+        </div>
+        <div class="nav-item" onclick="location.href='profile.html'">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">You</span>
+        </div>
+    </nav>
 
-        async function fetchShorts() {
+    <script>
+        const API_KEY = "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ";
+        const feed = document.getElementById('shorts-feed');
+
+        async function loadShorts() {
             try {
-                // Fetching random shorts using YouTube search
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&q=shorts&maxResults=15&key=${API_KEY}`);
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&q=trending+shorts&maxResults=10&key=${API_KEY}`);
                 const data = await res.json();
                 renderShorts(data.items);
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error loading shorts:", e); }
         }
 
         function renderShorts(items) {
-            container.innerHTML = items.map(item => `
-                <section class="short-video-section">
-                    <div class="video-wrapper">
-                        <iframe src="https://www.youtube.com/embed/${item.id.videoId}?autoplay=0&controls=0&loop=1&playlist=${item.id.videoId}&modestbranding=1" 
-                                allow="autoplay; encrypted-media"></iframe>
+            feed.innerHTML = items.map((item, index) => `
+                <div class="short-section" id="short-${index}">
+                    <div class="video-container" onclick="toggleMute(this)">
+                        <iframe 
+                            id="player-${index}"
+                            src="https://www.youtube.com/embed/${item.id.videoId}?enablejsapi=1&autoplay=0&controls=0&loop=1&playlist=${item.id.videoId}&modestbranding=1&rel=0" 
+                            allow="autoplay; encrypted-media">
+                        </iframe>
                         
-                        <div class="shorts-overlay">
-                            <div class="overlay-btn"><div class="btn-icon">👍</div><span>Like</span></div>
-                            <div class="overlay-btn"><div class="btn-icon">💬</div><span>1.2K</span></div>
-                            <div class="overlay-btn"><div class="btn-icon">↗️</div><span>Share</span></div>
+                        <div class="shorts-side-actions">
+                            <div class="action-item"><div class="action-icon">❤️</div><span>Like</span></div>
+                            <div class="action-item"><div class="action-icon">💬</div><span>842</span></div>
+                            <div class="action-item"><div class="action-icon">↗️</div><span>Share</span></div>
                         </div>
 
-                        <div class="short-info">
-                            <h4>${item.snippet.title}</h4>
+                        <div class="short-info-bottom">
+                            <h4>${item.snippet.title.substring(0, 50)}...</h4>
                             <p>@${item.snippet.channelTitle}</p>
                         </div>
                     </div>
-                </section>
+                </div>
             `).join('');
+
+            setupAutoplay();
         }
 
-        fetchShorts();
+        function setupAutoplay() {
+            const observerOptions = { threshold: 0.8 };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const iframe = entry.target.querySelector('iframe');
+                    if (entry.isIntersecting) {
+                        // Play Video (Sending command to YouTube IFrame API)
+                        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                    } else {
+                        // Pause Video
+                        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.short-section').forEach(section => observer.observe(section));
+        }
+
+        // Browser restrictions ke wajah se sound ke liye click handle
+        function toggleMute(container) {
+            const iframe = container.querySelector('iframe');
+            // Hum directly iframe mute nahi kar sakte security wajah se, but hum overlay alert de sakte hain
+            alert("Tap the video to play with sound! (Browser Security)");
+            iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        }
+
+        loadShorts();
     </script>
 </body>
-  </html>
-  
+</html>
