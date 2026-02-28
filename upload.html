@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video - ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .upload-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .upload-box {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: 20px;
+            padding: 60px 20px;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-box:hover, .upload-box.dragging {
+            border-color: #fff;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Form Details (Hidden by default) */
+        .upload-details {
+            display: none;
+            margin-top: 30px;
+            gap: 30px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .details-left { flex: 2; }
+        .details-right { flex: 1; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            outline: none;
+        }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #fff;
+            transition: width 0.3s;
+        }
+
+        .preview-box {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .publish-btn {
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .upload-details { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">ViewTube X</div>
+        <div class="nav-actions">
+            <button class="nav-link" onclick="location.href='index.html'">Cancel</button>
+        </div>
+    </nav>
+
+    <div class="upload-container">
+        <div class="upload-box" id="drop-zone">
+            <span class="upload-icon">📤</span>
+            <h2 style="font-family: 'Syne';">Select video files to upload</h2>
+            <p style="color: var(--text-secondary);">Your videos will be private until you publish them.</p>
+            <input type="file" id="file-input" hidden accept="video/*">
+            <button class="publish-btn" style="max-width: 200px; margin: 20px auto;" onclick="document.getElementById('file-input').click()">Select Files</button>
+        </div>
+
+        <div class="progress-wrapper" id="prog-wrap">
+            <p id="prog-text" style="font-size: 0.8rem; margin-bottom: 10px;">Uploading 0%</p>
+            <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+        </div>
+
+        <div class="upload-details" id="details-form">
+            <div class="details-left">
+                <div class="input-group">
+                    <label>Title (required)</label>
+                    <input type="text" placeholder="Add a title that describes your video">
+                </div>
+                <div class="input-group">
+                    <label>Description</label>
+                    <textarea rows="6" placeholder="Tell viewers about your video"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Thumbnail</label>
+                    <div style="padding: 20px; border: 1px dashed var(--border); border-radius: 8px; text-align: center; color: var(--text-secondary); cursor: pointer;">
+                        Upload Thumbnail
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-right">
+                <div class="preview-box">
+                    <p id="preview-msg" style="color: #444; font-size: 0.8rem;">Video Preview</p>
+                    <video id="video-preview" style="display:none; width:100%; height:100%;" controls></video>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 10px;">Filename: <span id="fname" style="color:#fff;">-</span></p>
+                <button class="publish-btn" onclick="finishUpload()">Publish Video</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const progWrap = document.getElementById('prog-wrap');
+        const detailsForm = document.getElementById('details-form');
+
+        // Drag and Drop Effects
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragging'); }
+        dropZone.ondragleave = () => { dropZone.classList.remove('dragging'); }
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            handleFile(file);
+        }
+
+        fileInput.onchange = (e) => { handleFile(e.target.files[0]); }
+
+        function handleFile(file) {
+            if(!file || !file.type.startsWith('video/')) return alert("Please select a valid video file.");
+
+            dropZone.style.display = 'none';
+            progWrap.style.display = 'block';
+            document.getElementById('fname').innerText = file.name;
+
+            // Fake Upload Animation
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if(progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    showDetails(file);
+                }
+                document.getElementById('prog-fill').style.width = progress + '%';
+                document.getElementById('prog-text').innerText = `Uploading ${Math.round(progress)}%`;
+            }, 200);
+        }
+
+        function showDetails(file) {
+            progWrap.style.display = 'none';
+            detailsForm.style.display = 'flex';
+            
+            // Show Video Preview
+            const videoPreview = document.getElementById('video-preview');
+            const previewMsg = document.getElementById('preview-msg');
+            videoPreview.src = URL.createObjectURL(file);
+            videoPreview.style.display = 'block';
+            previewMsg.style.display = 'none';
+        }
+
+        function finishUpload() {
+            alert("Congratulations! Your video has been published to ViewTube X.");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
