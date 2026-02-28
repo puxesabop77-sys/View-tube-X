@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        /* Profile Header Section */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 40px;
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+
+        .profile-avatar-big {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #ff0000, #ff5555);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .user-info h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .user-info p {
+            color: var(--text-secondary);
+            margin: 5px 0 15px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .edit-btn, .logout-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .edit-btn { background: #fff; color: #000; }
+        .logout-btn { background: transparent; color: #ff4444; border-color: #ff4444; }
+        .logout-btn:hover { background: #ff4444; color: #fff; }
+
+        /* Watch History Section */
+        .history-section h3 {
+            font-family: 'Syne', sans-serif;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-history {
+            font-size: 0.8rem;
+            color: #3ea6ff;
+            cursor: pointer;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">ViewTube X</div>
+        <div class="nav-actions">
+            <button class="nav-link" onclick="location.href='index.html'">Home</button>
+            <button class="theme-toggle" id="dark-toggle">Theme</button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar-big" id="p-avatar">S</div>
+            <div class="user-info">
+                <h1 id="p-number">User</h1>
+                <p>ViewTube X Premium Member</p>
+                <div class="action-btns">
+                    <button class="edit-btn">Edit Profile</button>
+                    <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h3>Watch History <span class="clear-history">Clear all</span></h3>
+            <div id="history-grid" class="empty-history">
+                <p>Your watch history is empty. Start exploring!</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="location.href='index.html'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item" onclick="location.href='shorts.html'">
+            <span class="nav-icon">🩳</span>
+            <span class="nav-text">Shorts</span>
+        </div>
+        <div class="nav-item" onclick="togglePlusMenu()">
+            <span class="nav-icon">➕</span>
+        </div>
+        <div class="nav-item" onclick="location.href='subscriptions.html'">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Subscriptions</span>
+        </div>
+        <div class="nav-item active">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">You</span>
+        </div>
+    </nav>
+
+    <script>
+        // Data fetch from LocalStorage
+        const userNum = localStorage.getItem('userPhone');
+        if(userNum) {
+            document.getElementById('p-number').innerText = userNum;
+            // First digit as Avatar
+            document.getElementById('p-avatar').innerText = userNum.charAt(userNum.length - 1);
+        }
+
+        function handleLogout() {
+            if(confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userPhone');
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+</body>
+</html>
