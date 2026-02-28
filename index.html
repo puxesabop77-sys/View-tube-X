@@ -15,7 +15,15 @@
 </head>
 <body>
 
-    <div id="top-progress"></div>
+    <div id="main-loader">
+        <div class="loader-content">
+            <h1 class="loader-logo">ViewTube X</h1>
+            <div class="loader-bar-container">
+                <div class="loader-bar-fill" id="loader-fill"></div>
+            </div>
+            <p class="loader-status">Lumi Lens Initializing...</p>
+        </div>
+    </div>
 
     <nav id="navbar">
         <div class="nav-logo" onclick="location.href='index.html'">ViewTube X</div>
@@ -26,8 +34,7 @@
         </div>
 
         <div class="nav-icons-top">
-            <button class="nav-icon-btn" title="Upload" onclick="location.href='upload.html'">📤</button>
-            <button class="nav-icon-btn" title="Notifications">🔔</button>
+            <button class="nav-icon-btn" onclick="location.href='upload.html'" title="Upload">📤</button>
             <div class="user-avatar" onclick="location.href='profile.html'" id="profile-initial">S</div>
         </div>
     </nav>
@@ -36,10 +43,7 @@
         <section class="section-container">
             <h3 class="section-title"><span>⚡</span> Shorts</h3>
             <div class="shorts-grid" id="shorts-grid">
-                <div class="short-card-skeleton"></div>
-                <div class="short-card-skeleton"></div>
-                <div class="short-card-skeleton"></div>
-            </div>
+                </div>
         </section>
 
         <section class="section-container">
@@ -64,10 +68,6 @@
                 <div class="option-item" onclick="location.href='upload.html'">
                     <span class="opt-icon">📤</span>
                     <div class="opt-text"><b>Upload a video</b><p>Post your long-form content</p></div>
-                </div>
-                <div class="option-item" onclick="alert('Live is locked')">
-                    <span class="opt-icon">📡</span>
-                    <div class="opt-text"><b>Go Live</b><p>Start a broadcast</p></div>
                 </div>
             </div>
         </div>
@@ -95,33 +95,43 @@
         </div>
     </nav>
 
+    <footer>
+        <p>&copy; 2026 VIEWTUBE X . DESIGNED BY SUFIYAN ABSAR | ANTI LODGE</p>
+    </footer>
+
     <script src="script.js"></script>
     <script>
-        // Profile Initial Logic
+        // Profile Initial: Display last digit of phone number
         const userNum = localStorage.getItem('userPhone');
         if(userNum) {
             document.getElementById('profile-initial').innerText = userNum.charAt(userNum.length - 1);
         }
 
-        // Plus Menu Logic
+        // Plus Menu Toggle Logic
         function togglePlusMenu() {
             document.getElementById('plus-menu-overlay').classList.toggle('active');
-            document.body.style.overflow = document.getElementById('plus-menu-overlay').classList.contains('active') ? 'hidden' : 'auto';
         }
 
-        // Global Search Logic
+        // Master Loading Logic
+        window.addEventListener('load', () => {
+            const fill = document.getElementById('loader-fill');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 25;
+                fill.style.width = progress + '%';
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('main-loader').classList.add('loader-hidden');
+                    }, 600);
+                }
+            }, 200);
+        });
+
+        // Global Search Execution
         document.getElementById('search-btn').onclick = () => {
             const query = document.getElementById('search-input').value;
             if(query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
-        }
-        document.getElementById('search-input').onkeyup = (e) => {
-            if(e.key === 'Enter') document.getElementById('search-btn').click();
-        }
-
-        // Page Progress Bar
-        window.onload = () => {
-            document.getElementById('top-progress').style.width = '100%';
-            setTimeout(() => { document.getElementById('top-progress').style.opacity = '0'; }, 500);
         }
     </script>
 </body>
