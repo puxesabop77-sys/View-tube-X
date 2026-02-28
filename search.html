@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - ViewTube X</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-results-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .query-header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .query-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .query-header span {
+            color: #fff;
+        }
+
+        /* List View for Search (YouTube Style) */
+        .search-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-card {
+            display: flex;
+            gap: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .search-card:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .search-card img {
+            width: 360px;
+            min-width: 360px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .search-card-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .search-card-info h3 {
+            margin: 0 0 8px;
+            font-size: 1.2rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .search-card-info .meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .search-card-info .desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .search-card { flex-direction: column; }
+            .search-card img { width: 100%; min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">ViewTube X</div>
+        <div class="search-wrap">
+            <input type="text" id="inner-search-input" placeholder="Search again...">
+            <button class="search-btn" id="inner-search-btn">SEARCH</button>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-link" onclick="location.href='index.html'">Home</button>
+        </div>
+    </nav>
+
+    <div class="search-results-container">
+        <div class="query-header">
+            <h2 id="result-for">Results for: <span id="query-text">Loading...</span></h2>
+        </div>
+
+        <div id="search-list" class="search-list">
+            </div>
+
+        <div id="search-spinner" style="text-align:center; padding:50px;">
+            <p>Searching the universe...</p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="location.href='index.html'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </div>
+        <div class="nav-item" onclick="location.href='shorts.html'">
+            <span class="nav-icon">🩳</span>
+            <span class="nav-text">Shorts</span>
+        </div>
+        <div class="nav-item" onclick="location.href='subscriptions.html'">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Subscriptions</span>
+        </div>
+        <div class="nav-item" onclick="location.href='profile.html'">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">You</span>
+        </div>
+    </nav>
+
+    <script>
+        const API_KEY = "AIzaSyDTJfnHa3zmUUu__wc2VEL5oRzIgij6kcQ";
+        
+        // URL se query nikalna
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get('q');
+
+        if (query) {
+            document.getElementById('query-text').innerText = query;
+            fetchResults(query);
+        }
+
+        async function fetchResults(q) {
+            const list = document.getElementById('search-list');
+            const spinner = document.getElementById('search-spinner');
+            
+            try {
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q=${encodeURIComponent(q)}&key=${API_KEY}`);
+                const data = await res.json();
+                
+                spinner.style.display = 'none';
+                
+                list.innerHTML = data.items.map(item => `
+                    <div class="search-card" onclick="location.href='player.html?v=${item.id.videoId}'">
+                        <img src="${item.snippet.thumbnails.high.url}">
+                        <div class="search-card-info">
+                            <h3>${item.snippet.title}</h3>
+                            <div class="meta">${item.snippet.channelTitle} • ${new Date(item.snippet.publishedAt).toLocaleDateString()}</div>
+                            <div class="desc">${item.snippet.description}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+                spinner.innerText = "Error fetching results.";
+            }
+        }
+
+        // Search logic for this page
+        document.getElementById('inner-search-btn').onclick = () => {
+            const val = document.getElementById('inner-search-input').value;
+            if(val) window.location.href = `search.html?q=${encodeURIComponent(val)}`;
+        }
+    </script>
+</body>
+</html>
