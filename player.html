@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View-Tube-X Player</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="watermark">Made in India 🇮🇳 By Sufiyan Absar</div>
+
+<header class="header">
+  <div class="header-left">
+    <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <a href="index.html" class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="ViewTubeX" style="height:20px;filter:hue-rotate(180deg);">
+      <span style="font-size:14px;font-weight:700;color:#ff0000;margin-left:4px;">X</span>
+    </a>
+  </div>
+  <div class="header-center">
+    <form class="search-form" onsubmit="doSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search" class="search-input">
+      <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+    </form>
+    <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn"><i class="fas fa-video"></i></button>
+    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+    <a href="login.html"><img src="https://ui-avatars.com/api/?name=User&background=ff0000&color=fff&size=32" class="avatar" alt="Account"></a>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="shorts.html" class="nav-item"><i class="fas fa-film"></i><span>Shorts</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-play-circle"></i><span>Subscriptions</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Your Channel</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-clock"></i><span>Watch Later</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="search.html?q=trending" class="nav-item"><i class="fas fa-fire"></i><span>Trending</span></a>
+  </nav>
+</aside>
+
+<main class="main-content" id="mainContent">
+  <div class="player-page">
+    <div class="player-main">
+      <div class="player-wrapper">
+        <iframe id="playerFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      
+      <h1 class="player-title" id="playerTitle">Loading...</h1>
+      
+      <div class="player-stats">
+        <span class="player-views" id="playerViews"></span>
+        <div class="action-btns" id="actionBtns">
+          <button class="action-btn" id="likeBtn" onclick="toggleLike()">
+            <i class="fas fa-thumbs-up"></i> <span id="likeCount">0</span>
+          </button>
+          <button class="action-btn" onclick="toggleDislike()">
+            <i class="fas fa-thumbs-down"></i> Dislike
+          </button>
+          <button class="action-btn" onclick="shareVideo()">
+            <i class="fas fa-share"></i> Share
+          </button>
+          <button class="action-btn" onclick="saveVideo()">
+            <i class="fas fa-bookmark"></i> Save
+          </button>
+          <button class="action-btn" onclick="downloadInfo()">
+            <i class="fas fa-download"></i> Download
+          </button>
+        </div>
+      </div>
+
+      <div class="player-channel" id="playerChannel">
+        <img class="player-channel-avatar" id="channelAvatar" src="" alt="">
+        <div>
+          <div class="channel-name" id="channelName"></div>
+          <div class="channel-subs" id="channelSubs"></div>
+        </div>
+        <button class="subscribe-btn" id="subscribeBtn" onclick="toggleSubscribe(this)">Subscribe</button>
+      </div>
+
+      <div class="player-description" id="playerDesc" onclick="this.classList.toggle('expanded')">
+        Loading description...
+        <br><br><em>Click to expand</em>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments-section">
+        <h3 class="comments-title"><span id="commentCount">0</span> Comments</h3>
+        <div class="comment-input-row">
+          <img src="https://ui-avatars.com/api/?name=You&background=ff0000&color=fff&size=40" class="comment-avatar" style="width:40px;height:40px;border-radius:50%">
+          <input type="text" class="comment-input" id="commentInput" placeholder="Add a comment...">
+          <button class="comment-submit" onclick="postComment()">Post</button>
+        </div>
+        <div id="commentsList"></div>
+      </div>
+    </div>
+
+    <!-- Related Videos Sidebar -->
+    <div class="player-sidebar">
+      <div id="relatedVideos">
+        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Press</a><a href="#">Copyright</a>
+    <a href="#">Terms</a><a href="#">Privacy</a><a href="feedback.html">Feedback</a>
+  </div>
+  <p class="footer-copy">© 2014 Sufiyan Absar. All Rights Reserved.</p>
+  <p class="footer-made">Made in India 🇮🇳 By Sufiyan Absar</p>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const videoId = params.get('v');
+let isLiked = false;
+let isSubscribed = false;
+
+if (videoId) {
+  document.getElementById('playerFrame').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+  loadVideoDetails();
+  loadRelatedVideos();
+  loadComments();
+}
+
+async function loadVideoDetails() {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoId}&key=${API_KEY}`);
+    const data = await res.json();
+    const v = data.items[0];
+    const s = v.snippet;
+    const st = v.statistics;
+
+    document.title = s.title + ' - View-Tube-X';
+    document.getElementById('playerTitle').textContent = s.title;
+    document.getElementById('playerViews').textContent = `${formatViews(st.viewCount)} • ${timeAgo(s.publishedAt)}`;
+    document.getElementById('likeCount').textContent = formatNumber(st.likeCount);
+    document.getElementById('commentCount').textContent = formatNumber(st.commentCount);
+    document.getElementById('playerDesc').textContent = s.description || 'No description available.';
+    document.getElementById('channelName').textContent = s.channelTitle;
+    document.getElementById('channelAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.channelTitle)}&background=random&size=48`;
+
+    // Load channel info
+    loadChannelInfo(s.channelId);
+  } catch(e) { console.error(e); }
+}
+
+async function loadChannelInfo(channelId) {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet&id=${channelId}&key=${API_KEY}`);
+    const data = await res.json();
+    if (data.items && data.items[0]) {
+      const ch = data.items[0];
+      document.getElementById('channelSubs').textContent = formatNumber(ch.statistics.subscriberCount) + ' subscribers';
+      if (ch.snippet.thumbnails?.default?.url)
+        document.getElementById('channelAvatar').src = ch.snippet.thumbnails.default.url;
+    }
+  } catch(e) {}
+}
+
+async function loadRelatedVideos() {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=${videoId}&type=video&maxResults=15&key=${API_KEY}`);
+    const data = await res.json();
+    const container = document.getElementById('relatedVideos');
+    container.innerHTML = '';
+    
+    data.items.forEach(item => {
+      const id = item.id.videoId;
+      const s = item.snippet;
+      const thumb = s.thumbnails?.medium?.url || '';
+      const div = document.createElement('div');
+      div.className = 'related-video';
+      div.onclick = () => window.location.href = `player.html?v=${id}`;
+      div.innerHTML = `
+        <div class="related-thumb">
+          <img src="${thumb}" alt="${s.title}" loading="lazy">
+        </div>
+        <div class="related-info">
+          <p class="related-title">${s.title}</p>
+          <p class="related-meta">${s.channelTitle}<br>${timeAgo(s.publishedAt)}</p>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  } catch(e) {
+    document.getElementById('relatedVideos').innerHTML = '<p style="color:#aaa;padding:16px">Could not load related videos.</p>';
+  }
+}
+
+async function loadComments() {
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId=${videoId}&maxResults=20&order=relevance&key=${API_KEY}`);
+    const data = await res.json();
+    const container = document.getElementById('commentsList');
+    container.innerHTML = '';
+    
+    if (!data.items) return;
+    
+    data.items.forEach(item => {
+      const c = item.snippet.topLevelComment.snippet;
+      const div = document.createElement('div');
+      div.className = 'comment';
+      div.innerHTML = `
+        <img src="${c.authorProfileImageUrl || 'https://ui-avatars.com/api/?name=U&size=40'}" class="comment-avatar" alt="${c.authorDisplayName}">
+        <div>
+          <div>
+            <span class="comment-author">${c.authorDisplayName}</span>
+            <span class="comment-date">${timeAgo(c.publishedAt)}</span>
+          </div>
+          <p class="comment-text">${c.textDisplay}</p>
+          <div class="comment-actions">
+            <button class="comment-action-btn" onclick="this.querySelector('i').classList.toggle('fas'); this.querySelector('i').classList.toggle('far')">
+              <i class="far fa-thumbs-up"></i> ${formatNumber(c.likeCount)}
+            </button>
+            <button class="comment-action-btn"><i class="far fa-thumbs-down"></i></button>
+            <button class="comment-action-btn">Reply</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  } catch(e) {}
+}
+
+function toggleLike() {
+  isLiked = !isLiked;
+  const btn = document.getElementById('likeBtn');
+  btn.classList.toggle('liked', isLiked);
+  showNotification(isLiked ? '👍 Added to liked videos' : 'Removed from liked videos');
+}
+
+function toggleDislike() { showNotification('Feedback noted'); }
+
+function shareVideo() {
+  const url = `https://view-tube-x.vercel.app/player.html?v=${videoId}`;
+  navigator.clipboard.writeText(url).then(() => showNotification('🔗 Link copied!'));
+}
+
+function saveVideo() { showNotification('💾 Saved to Watch Later'); }
+
+function downloadInfo() { showNotification('⬇️ Use a downloader tool to save this video'); }
+
+function toggleSubscribe(btn) {
+  isSubscribed = !isSubscribed;
+  btn.textContent = isSubscribed ? 'Subscribed ✓' : 'Subscribe';
+  btn.classList.toggle('subscribed', isSubscribed);
+  showNotification(isSubscribed ? '🔔 Subscribed!' : 'Unsubscribed');
+}
+
+function postComment() {
+  const input = document.getElementById('commentInput');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const div = document.createElement('div');
+  div.className = 'comment';
+  div.innerHTML = `
+    <img src="https://ui-avatars.com/api/?name=You&background=ff0000&color=fff&size=40" class="comment-avatar">
+    <div>
+      <div><span class="comment-author">You</span><span class="comment-date">Just now</span></div>
+      <p class="comment-text">${text}</p>
+      <div class="comment-actions">
+        <button class="comment-action-btn"><i class="far fa-thumbs-up"></i> 0</button>
+        <button class="comment-action-btn">Reply</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('commentsList').insertBefore(div, document.getElementById('commentsList').firstChild);
+  input.value = '';
+  showNotification('💬 Comment posted!');
+}
+
+function doSearch(e) {
+  e.preventDefault();
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+}
+</script>
+</body>
+</html>

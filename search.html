@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search - View-Tube-X</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="watermark">Made in India 🇮🇳 By Sufiyan Absar</div>
+
+<header class="header">
+  <div class="header-left">
+    <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <a href="index.html" class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="ViewTubeX" style="height:20px;filter:hue-rotate(180deg);">
+      <span style="font-size:14px;font-weight:700;color:#ff0000;margin-left:4px;">X</span>
+    </a>
+  </div>
+  <div class="header-center">
+    <form class="search-form" onsubmit="doSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search" class="search-input">
+      <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+    </form>
+    <button class="mic-btn"><i class="fas fa-microphone"></i></button>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn"><i class="fas fa-video"></i></button>
+    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+    <a href="login.html"><img src="https://ui-avatars.com/api/?name=User&background=ff0000&color=fff&size=32" class="avatar" alt="Account"></a>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="shorts.html" class="nav-item"><i class="fas fa-film"></i><span>Shorts</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-play-circle"></i><span>Subscriptions</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Your Channel</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="search.html?q=trending" class="nav-item"><i class="fas fa-fire"></i><span>Trending</span></a>
+    <a href="search.html?q=music" class="nav-item"><i class="fas fa-music"></i><span>Music</span></a>
+    <a href="search.html?q=gaming" class="nav-item"><i class="fas fa-gamepad"></i><span>Gaming</span></a>
+  </nav>
+</aside>
+
+<main class="main-content" id="mainContent">
+  <!-- Filter Tabs -->
+  <div class="filter-bar">
+    <button class="chip active" onclick="filterType('video', this)"><i class="fas fa-play"></i> Videos</button>
+    <button class="chip" onclick="filterType('channel', this)"><i class="fas fa-user"></i> Channels</button>
+    <button class="chip" onclick="filterType('playlist', this)"><i class="fas fa-list"></i> Playlists</button>
+  </div>
+
+  <div class="search-results" style="max-width:100%">
+    <p class="search-header" id="searchHeader"></p>
+    <div id="sortBar" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <span style="color:#aaa;font-size:14px;align-self:center">Filter:</span>
+      <button class="chip" onclick="sortBy('relevance', this)">Relevance</button>
+      <button class="chip" onclick="sortBy('date', this)">Upload Date</button>
+      <button class="chip" onclick="sortBy('rating', this)">Rating</button>
+      <button class="chip" onclick="sortBy('viewCount', this)">View Count</button>
+    </div>
+    <div id="searchResults">
+      <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Searching...</div>
+    </div>
+    <div class="load-more-container">
+      <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()" style="display:none">Load More</button>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a>
+    <a href="feedback.html">Feedback</a>
+  </div>
+  <p class="footer-copy">© 2014 Sufiyan Absar. All Rights Reserved.</p>
+  <p class="footer-made">Made in India 🇮🇳 By Sufiyan Absar</p>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const query = params.get('q') || '';
+const channelId = params.get('channel') || '';
+let nextPageToken = '';
+let currentOrder = 'relevance';
+let currentType = 'video';
+
+if (query) {
+  document.getElementById('searchInput').value = query;
+  document.title = `${query} - View-Tube-X`;
+}
+
+async function search(pageToken = '') {
+  try {
+    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&type=${currentType}&order=${currentOrder}&key=${API_KEY}`;
+    if (query) url += `&q=${encodeURIComponent(query)}`;
+    if (channelId) url += `&channelId=${channelId}`;
+    if (pageToken) url += `&pageToken=${pageToken}`;
+    
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    nextPageToken = data.nextPageToken || '';
+    document.getElementById('loadMoreBtn').style.display = nextPageToken ? 'block' : 'none';
+    
+    const header = query ? `Results for "${query}"` : 'Videos';
+    document.getElementById('searchHeader').textContent = header;
+    
+    if (!pageToken) document.getElementById('searchResults').innerHTML = '';
+    
+    if (!data.items || data.items.length === 0) {
+      document.getElementById('searchResults').innerHTML = '<p style="color:#aaa;padding:20px">No results found.</p>';
+      return;
+    }
+    
+    // For videos, get more details
+    if (currentType === 'video') {
+      const ids = data.items.map(i => i.id.videoId).join(',');
+      const detailRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${ids}&key=${API_KEY}`);
+      const detailData = await detailRes.json();
+      const detailMap = {};
+      (detailData.items || []).forEach(i => { detailMap[i.id] = i; });
+      
+      data.items.forEach(item => {
+        const id = item.id.videoId;
+        const s = item.snippet;
+        const detail = detailMap[id] || {};
+        const dur = detail.contentDetails ? formatDuration(detail.contentDetails.duration) : '';
+        const stats = detail.statistics || {};
+        const thumb = s.thumbnails?.high?.url || s.thumbnails?.medium?.url || '';
+        const channelAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(s.channelTitle)}&background=random&size=24`;
+        
+        const div = document.createElement('div');
+        div.className = 'search-result';
+        div.onclick = () => window.location.href = `player.html?v=${id}`;
+        div.innerHTML = `
+          <div class="search-thumb">
+            <img src="${thumb}" alt="${s.title}" loading="lazy">
+            ${dur ? `<span class="search-duration">${dur}</span>` : ''}
+          </div>
+          <div class="search-info">
+            <h3 class="search-title">${s.title}</h3>
+            <p class="search-meta">${stats.viewCount ? formatViews(stats.viewCount) + ' • ' : ''}${timeAgo(s.publishedAt)}</p>
+            <div class="search-channel">
+              <img src="${channelAvatar}" class="search-channel-avatar" alt="${s.channelTitle}">
+              <span style="font-size:13px;color:#aaa">${s.channelTitle}</span>
+            </div>
+            <p class="search-desc">${(s.description || '').substring(0, 200)}${s.description?.length > 200 ? '...' : ''}</p>
+          </div>
+        `;
+        document.getElementById('searchResults').appendChild(div);
+      });
+    } else {
+      // Channel results
+      data.items.forEach(item => {
+        const id = item.id.channelId;
+        const s = item.snippet;
+        const thumb = s.thumbnails?.medium?.url || '';
+        const div = document.createElement('div');
+        div.className = 'search-result';
+        div.onclick = () => window.location.href = `search.html?channel=${id}`;
+        div.innerHTML = `
+          <div class="search-thumb" style="display:flex;align-items:center;justify-content:center;background:#1a1a1a;">
+            <img src="${thumb}" style="width:80px;height:80px;border-radius:50%" alt="${s.channelTitle}">
+          </div>
+          <div class="search-info">
+            <h3 class="search-title">${s.channelTitle}</h3>
+            <p class="search-desc">${(s.description || '').substring(0, 150)}</p>
+          </div>
+        `;
+        document.getElementById('searchResults').appendChild(div);
+      });
+    }
+  } catch(e) {
+    document.getElementById('searchResults').innerHTML = '<p style="color:#aaa;padding:20px">Error loading results.</p>';
+  }
+}
+
+function loadMore() {
+  if (nextPageToken) search(nextPageToken);
+}
+
+function doSearch(e) {
+  e.preventDefault();
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+}
+
+function filterType(type, btn) {
+  currentType = type;
+  nextPageToken = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  search();
+}
+
+function sortBy(order, btn) {
+  currentOrder = order;
+  nextPageToken = '';
+  search();
+}
+
+search();
+</script>
+</body>
+</html>
