@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Channel - View-Tube-X</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="watermark">Made in India 🇮🇳 By Sufiyan Absar</div>
+
+<header class="header">
+  <div class="header-left">
+    <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <a href="index.html" class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="ViewTubeX" style="height:20px;filter:hue-rotate(180deg);">
+      <span style="font-size:14px;font-weight:700;color:#ff0000;margin-left:4px;">X</span>
+    </a>
+  </div>
+  <div class="header-center">
+    <form class="search-form" onsubmit="doSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search" class="search-input">
+      <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+    </form>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" onclick="window.location.href='upload.html'"><i class="fas fa-video"></i></button>
+    <button class="icon-btn"><i class="fas fa-bell"></i></button>
+    <a href="login.html"><img src="https://ui-avatars.com/api/?name=Sufiyan&background=ff0000&color=fff&size=32" class="avatar" alt="Account"></a>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <nav class="sidebar-nav">
+    <a href="index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="shorts.html" class="nav-item"><i class="fas fa-film"></i><span>Shorts</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-play-circle"></i><span>Subscriptions</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Your Channel</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-history"></i><span>History</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-clock"></i><span>Watch Later</span></a>
+    <a href="#" class="nav-item"><i class="fas fa-thumbs-up"></i><span>Liked Videos</span></a>
+    <div class="sidebar-divider"></div>
+    <a href="feedback.html" class="nav-item"><i class="fas fa-flag"></i><span>Feedback</span></a>
+  </nav>
+</aside>
+
+<main class="main-content" id="mainContent">
+  <div class="profile-page">
+    <!-- Banner -->
+    <div class="profile-banner" id="bannerArea" style="background:linear-gradient(135deg,#ff0000 0%,#cc0000 50%,#880000 100%);cursor:pointer" onclick="changeBanner()" title="Click to change banner color">
+      <div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:13px">Click to change banner</div>
+    </div>
+    
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <img src="https://ui-avatars.com/api/?name=Sufiyan+Absar&background=ff0000&color=fff&size=80" alt="Profile" id="profileAvatar">
+      </div>
+      <div>
+        <h1 class="profile-name" id="profileName">Sufiyan Absar</h1>
+        <p class="profile-handle" id="profileHandle">@sufiyanabsar • 0 subscribers • 0 videos</p>
+        <button style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:20px;cursor:pointer;font-family:'Roboto',sans-serif;margin-top:8px" onclick="editProfile()">
+          <i class="fas fa-pencil-alt"></i> Customize channel
+        </button>
+      </div>
+    </div>
+
+    <!-- Profile Tabs -->
+    <div class="profile-tabs">
+      <button class="profile-tab active" onclick="showTab('videos', this)">Videos</button>
+      <button class="profile-tab" onclick="showTab('playlists', this)">Playlists</button>
+      <button class="profile-tab" onclick="showTab('about', this)">About</button>
+    </div>
+
+    <!-- Videos Tab -->
+    <div id="tab-videos">
+      <div style="text-align:center;padding:60px;color:#aaa">
+        <i class="fas fa-film" style="font-size:64px;opacity:0.3;margin-bottom:16px;display:block"></i>
+        <h3 style="margin-bottom:8px">No videos yet</h3>
+        <p style="margin-bottom:24px">Start sharing your videos with the world!</p>
+        <button onclick="window.location.href='upload.html'" style="background:var(--red);border:none;color:#fff;padding:12px 24px;border-radius:20px;cursor:pointer;font-size:15px;font-family:'Roboto',sans-serif">
+          <i class="fas fa-upload"></i> Upload Your First Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Playlists Tab -->
+    <div id="tab-playlists" style="display:none">
+      <div style="text-align:center;padding:60px;color:#aaa">
+        <i class="fas fa-list" style="font-size:64px;opacity:0.3;margin-bottom:16px;display:block"></i>
+        <h3 style="margin-bottom:8px">No playlists yet</h3>
+        <p>Create a playlist to organize your videos.</p>
+      </div>
+    </div>
+
+    <!-- About Tab -->
+    <div id="tab-about" style="display:none;padding:24px">
+      <div style="max-width:600px">
+        <h3 style="margin-bottom:16px">About</h3>
+        <div style="background:var(--bg3);border-radius:12px;padding:20px">
+          <p style="color:#aaa;margin-bottom:16px" id="channelDesc">This is your View-Tube-X channel. Share amazing content with the world!</p>
+          <div style="border-top:1px solid var(--border);padding-top:16px">
+            <p style="color:#aaa;font-size:14px"><i class="fas fa-globe" style="margin-right:8px"></i>India</p>
+            <p style="color:#aaa;font-size:14px;margin-top:8px"><i class="fas fa-calendar" style="margin-right:8px"></i>Joined 2014</p>
+            <p style="color:#aaa;font-size:14px;margin-top:8px"><i class="fas fa-eye" style="margin-right:8px"></i>0 views</p>
+          </div>
+        </div>
+
+        <h3 style="margin:24px 0 16px">Stats</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--bg3);border-radius:12px;padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:700" id="statViews">0</div>
+            <div style="color:#aaa;font-size:14px">Total Views</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:12px;padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:700" id="statSubs">0</div>
+            <div style="color:#aaa;font-size:14px">Subscribers</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:12px;padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:700" id="statVideos">0</div>
+            <div style="color:#aaa;font-size:14px">Videos</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:12px;padding:20px;text-align:center">
+            <div style="font-size:32px;font-weight:700">2014</div>
+            <div style="color:#aaa;font-size:14px">Joined</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a>
+    <a href="feedback.html">Feedback</a>
+  </div>
+  <p class="footer-copy">© 2014 Sufiyan Absar. All Rights Reserved.</p>
+  <p class="footer-made">Made in India 🇮🇳 By Sufiyan Absar</p>
+</footer>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script>
+function showTab(tabName, btn) {
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tabName).style.display = 'block';
+  btn.classList.add('active');
+}
+
+function editProfile() {
+  const name = prompt('Enter your channel name:', document.getElementById('profileName').textContent);
+  if (name && name.trim()) {
+    document.getElementById('profileName').textContent = name.trim();
+    document.title = name.trim() + ' - View-Tube-X';
+  }
+}
+
+const bannerColors = [
+  'linear-gradient(135deg,#ff0000 0%,#cc0000 50%,#880000 100%)',
+  'linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%)',
+  'linear-gradient(135deg,#00c853 0%,#007228 100%)',
+  'linear-gradient(135deg,#ff6d00 0%,#e65100 100%)',
+  'linear-gradient(135deg,#6200ea 0%,#3700b3 100%)',
+  'linear-gradient(135deg,#00b0ff 0%,#0081cb 100%)',
+];
+let bannerIdx = 0;
+function changeBanner() {
+  bannerIdx = (bannerIdx + 1) % bannerColors.length;
+  document.getElementById('bannerArea').style.background = bannerColors[bannerIdx];
+}
+
+function doSearch(e) {
+  e.preventDefault();
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+}
+</script>
+</body>
+</html>
